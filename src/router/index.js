@@ -11,6 +11,7 @@ const routes = [
   {
     path: '/',
     component: () => import('@/views/home'),
+    redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
