@@ -18,8 +18,13 @@ const routes = [
         component: () => import('@/views/home/components/home-main')
       },
       {
-        path: 'manage-base-info',
-        component: () => import('@/views/manage-base-info')
+        path: 'manage-base-info/warehouse',
+        component: () => import('@/views/manage-base-info/warehouse')
+      },
+      {
+        path: 'manage-base-info/warehouse/addstorehouse',
+        component: () =>
+          import('@/views/manage-base-info/components/add-storehouse.vue')
       }
     ]
   }
