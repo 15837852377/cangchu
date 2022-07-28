@@ -8,31 +8,32 @@
           <el-row style="margin-left: -15px; margin-right: -15px">
             <el-col>
               <div class="divLable">仓库编号</div>
-              <el-input v-model="input" placeholder="请输入"></el-input>
+              <el-input v-model="likecode" placeholder="请输入"></el-input>
             </el-col>
             <el-col>
               <div class="divLable">库位名称</div>
-              <el-input v-model="input" placeholder="请输入"></el-input>
+              <el-input v-model="likename" placeholder="请输入"></el-input>
             </el-col>
             <el-col>
               <div class="divLable">库位状态</div>
               <el-form :inline="true">
                 <el-select
-                  v-model="state"
+                  v-model="status"
                   placeholder="请选择"
+                  width="100%"
                   style="background-color: #f8f5f5"
                   align="center"
                 >
-                  <el-option label="全部" value="all"></el-option>
-                  <el-option label="停用" value="stop"></el-option>
-                  <el-option label="启用" value="start"></el-option>
+                  <el-option label="全部" value=""></el-option>
+                  <el-option label="停用" value="0"></el-option>
+                  <el-option label="启用" value="1"></el-option>
                 </el-select>
               </el-form>
             </el-col>
           </el-row>
         </div>
         <div class="textRight">
-          <el-button round class="btn1">搜索</el-button>
+          <el-button round class="btn1" @click="getWarehouse">搜索</el-button>
           <el-button round class="btn2">重置</el-button>
         </div>
         <!-- 按钮 -->
@@ -43,7 +44,8 @@
           round
           class="addbtn"
           @click="$router.push('/manage-base-info/warehouse/addstorehouse')"
-          >新增仓库</el-button>
+          >新增仓库</el-button
+        >
         <div class="divContent-bottom">
           <!-- 表格 -->
           <div class="biaoge">
@@ -61,7 +63,12 @@
               </el-table-column>
               <el-table-column prop="name" label="仓库名称" width="150">
               </el-table-column>
-              <el-table-column prop="type" label="仓库类型" width="150">
+              <el-table-column
+                :formatter="formatter"
+                prop="type"
+                label="仓库类型"
+                width="150"
+              >
               </el-table-column>
               <el-table-column prop="location" label="省/市/区" width="200">
               </el-table-column>
@@ -83,11 +90,7 @@
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="180">
                 <template slot-scope="scope">
-                  <el-button
-                    @click.native.prevent="deleteRow(scope.$index, tableData)"
-                    type="text"
-                    size="small"
-                  >
+                  <el-button @click="edit" type="text" size="small">
                     编辑
                   </el-button>
                   <el-button
@@ -109,18 +112,22 @@
             </el-table>
           </div>
           <!-- 分页 -->
-          <div class="paging">
+          <el-row
+            type="flex"
+            justify="center"
+            align="middle"
+            style="padding-top: 18px; padding-bottom: 34px"
+          >
             <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page="currentPage"
+              :current-page="page"
               :page-sizes="[10, 20, 30, 40]"
               :page-size="10"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="4"
+              :total="+total"
+              @current-change="currentPage"
             >
             </el-pagination>
-          </div>
+          </el-row>
         </div>
       </div>
     </div>
@@ -132,35 +139,57 @@ import { getWarehouse } from '@/api/manage-base-info'
 export default {
   data () {
     return {
-      input: '',
+      likecode: '',
+      likename: '',
       // 表格数组数组
       warehouse: [],
-      // 三个状态
-      all: '',
-      stop: '',
-      start: '',
-      state: '',
-      currentPage: 1
+      status: '',
+      total: 0,
+      page: 1
     }
   },
   created () {
     this.getWarehouse()
   },
   methods: {
+    // 仓库状态判断
+    formatter (row, bb, cellvalue) {
+      // console.log(cellvalue)
+      if (cellvalue === 'ZZ') {
+        return '中转仓'
+      }
+      if (cellvalue === 'JG') {
+        return '加工仓'
+      }
+      if (cellvalue === 'CB') {
+        return '储备仓'
+      }
+      if (cellvalue === 'LC') {
+        return '冷藏仓'
+      } else {
+        return '未知'
+      }
+    },
+    currentPage (page) {
+      this.page = page
+      this.getWarehouse()
+    },
     async getWarehouse () {
-      const res = await getWarehouse()
+      const res = await getWarehouse({
+        like_code: this.likecode,
+        like_name: this.likename,
+        status: this.status,
+        current: this.page,
+        size: 10,
+        descs: 'createTime'
+      })
       console.log(res)
       this.warehouse = res.data.data.records
+      this.total = res.data.data.total
     },
+    edit () {},
     onSubmit () {
       console.log('submit!')
-    },
-    // 分页
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
     }
   }
 }
@@ -212,6 +241,8 @@ export default {
         }
         /deep/.el-input__inner {
           background: #f8f5f5;
+          height: 40px;
+          line-height: 40px;
         }
       }
     }
@@ -250,12 +281,6 @@ export default {
           height: 44px;
         }
       }
-    }
-    // 分页
-    .paging {
-      text-align: center;
-      padding-top: 18px;
-      padding-bottom: 34px;
     }
   }
 }

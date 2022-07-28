@@ -6,19 +6,26 @@
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col>
             <el-form-item label="仓库编码">
-              <el-input v-model="bianma" :disabled="true">
-                placeholder="请输入"></el-input
-              >
+              <el-input
+                v-model="bianma"
+                :disabled="true"
+                placeholder="请输入"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
             <el-form-item label="仓库名称">
-              <el-input v-model="mingcheng" placeholder="请输入"></el-input>
+              <el-input
+                v-model="mingcheng"
+                placeholder="请输入"
+                :clearable="true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
             <el-form-item label="仓库类型">
               <el-select
+                :clearable="true"
                 v-model="state"
                 placeholder="请选择"
                 style="width: 100%"
@@ -36,6 +43,7 @@
           <el-col style="width: 66.6666666667%">
             <el-form-item label="省/市/区">
               <el-cascader
+                :clearable="true"
                 style="width: 100%"
                 v-model="diqu"
                 :options="options"
@@ -48,11 +56,38 @@
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col style="width: 66.6666666667%">
             <el-form-item label="详细地址">
-              <el-input v-model="dizhi" placeholder="请输入"></el-input>
+              <el-input
+                v-model="dizhi"
+                placeholder="请输入"
+                :clearable="true"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="仓库状态"> </el-form-item>
+            <el-form-item label="仓库状态" :clearable="true">
+              <div class="radio">
+                <el-radio v-model="radio" label="1">启用</el-radio>
+                <el-radio v-model="radio" label="2">停用</el-radio>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="margin-left: -15px; margin-right: -15px">
+          <el-col>
+            <el-form-item label="仓库面积" :clearable="true">
+              <el-input v-model="mianji" placeholder="请输入"></el-input>
+              <span class="el-input-group__append">m³</span>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="负责人" :clearable="true">
+              <el-input v-model="fuzeren" placeholder="请输入"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="联系电话" :clearable="true">
+              <el-input v-model="dianhua" placeholder="请输入"></el-input>
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -81,7 +116,12 @@ export default {
       diqu: '',
       options: [],
       // -------------
-      dizhi: ''
+      dizhi: '',
+      mianji: '',
+      fuzeren: '',
+      dianhua: '',
+
+      radio: '1'
     }
   },
   methods: {
@@ -118,11 +158,16 @@ export default {
         /deep/.el-form-item__label {
           color: #887e7e;
           margin-bottom: 10px;
-          height: 18px;
           font-size: 12px !important;
           font-family: PingFangSC, PingFangSC-Medium;
           font-weight: 500;
           padding: 0 12px 0 5px;
+        }
+        .radio {
+          width: 100%;
+          display: inline-block;
+          line-height: 1;
+          vertical-align: middle;
         }
         .el-input {
           position: relative;
@@ -130,14 +175,21 @@ export default {
           display: inline-block;
           width: 100%;
           /deep/.el-input__inner {
-            background: #f3ebeb;
+            background: #f8f5f5;
             border-color: #f3ebeb;
             color: #b5abab;
-            cursor: not-allowed;
             height: 40px;
             line-height: 40px;
             border-radius: 6px;
           }
+        }
+        .el-input-group__append {
+          width: 40px;
+          height: 40px;
+          background: #e7dfdf;
+          border-radius: 0 6px 6px 0;
+          padding: 0 10px;
+          border: 0;
         }
       }
       /deep/.el-input__inner {
