@@ -43,7 +43,7 @@
         <el-button
           round
           class="addbtn"
-          @click="$router.push('/manage-base-info/warehouse/addstorehouse')"
+          @click="$router.push('/manage-base-info/warehouse/details')"
           >新增仓库</el-button
         >
         <div class="divContent-bottom">
@@ -90,16 +90,10 @@
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="180">
                 <template slot-scope="scope">
-                  <el-button @click="edit" type="text" size="small">
+                  <el-button @click="edit(scope.row)" type="text" size="small">
                     编辑
                   </el-button>
-                  <el-button
-                    @click.native.prevent="deleteRow(scope.$index, tableData)"
-                    type="text"
-                    size="small"
-                  >
-                    停用
-                  </el-button>
+                  <el-button type="text" size="small"> 停用 </el-button>
                   <el-button
                     @click.native.prevent="deleteRow(scope.$index, tableData)"
                     type="text"
@@ -187,7 +181,10 @@ export default {
       this.warehouse = res.data.data.records
       this.total = res.data.data.total
     },
-    edit () {},
+    edit (data) {
+      this.$store.dispatch('mangeBase/editWarehouse', data.id)
+      this.$router.push('/manage-base-info/warehouse/revise-details')
+    },
     onSubmit () {
       console.log('submit!')
     }
