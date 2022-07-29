@@ -143,6 +143,7 @@ export default {
     }
   },
   created () {
+    // 列表数据
     this.getWarehouse()
   },
   methods: {
@@ -164,10 +165,12 @@ export default {
         return '未知'
       }
     },
+    // 分页数据跳转选软
     currentPage (page) {
       this.page = page
       this.getWarehouse()
     },
+    // 搜索
     async getWarehouse () {
       const res = await getWarehouse({
         like_code: this.likecode,
@@ -181,9 +184,10 @@ export default {
       this.warehouse = res.data.data.records
       this.total = res.data.data.total
     },
+    // 编辑按钮
     edit (data) {
       this.$store.dispatch('mangeBase/editWarehouse', data.id)
-      this.$router.push('/manage-base-info/warehouse/revise-details')
+      this.$router.push('/manage-base-info/warehouse/details')
     },
     onSubmit () {
       console.log('submit!')

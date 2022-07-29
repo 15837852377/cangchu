@@ -24,11 +24,6 @@ const routes = [
       {
         path: 'manage-base-info/warehouse/details',
         component: () => import('@/views/manage-base-info/components/details')
-      },
-      {
-        path: 'manage-base-info/warehouse/revise-details',
-        component: () =>
-          import('@/views/manage-base-info/components/revise-details')
       }
     ]
   }

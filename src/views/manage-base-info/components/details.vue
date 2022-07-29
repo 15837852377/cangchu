@@ -2,91 +2,100 @@
   <div>
     <div class="divWarehouseAdd">
       <!-- 表单 -->
-      <el-form class="divForm">
+      <el-form class="divForm" :v-model="formDate">
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col>
-            <el-form-item label="仓库编码">
+            <el-form-item label="仓库编码" prop="code">
               <el-input
-                v-model="bianma"
+                v-model="formDate.code"
                 :disabled="true"
                 placeholder="请输入"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="仓库名称">
+            <el-form-item label="仓库名称" prop="name">
               <el-input
-                v-model="mingcheng"
+                v-model="formDate.name"
                 placeholder="请输入"
                 :clearable="true"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="仓库类型">
+            <el-form-item label="仓库类型" prop="type">
               <el-select
                 :clearable="true"
-                v-model="state"
+                v-model="formDate.type"
                 placeholder="请选择"
                 style="width: 100%"
                 align="center"
               >
-                <el-option label="中转仓" value="zhongzhuan"></el-option>
-                <el-option label="加工仓" value="jiagong"></el-option>
-                <el-option label="储备仓" value="chubei"></el-option>
-                <el-option label="冷藏仓" value="lengcang"></el-option>
+                <el-option label="中转仓" value="ZZ"></el-option>
+                <el-option label="加工仓" value="JG"></el-option>
+                <el-option label="储备仓" value="CB"></el-option>
+                <el-option label="冷藏仓" value="LC"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col style="width: 66.6666666667%">
-            <el-form-item label="省/市/区">
+            <el-form-item label="省/市/区" prop="areaCode">
               <el-cascader
                 :clearable="true"
                 style="width: 100%"
-                v-model="diqu"
+                v-model="formDate.selectedOptions"
                 :options="options"
                 :props="{ expandTrigger: 'hover' }"
-                @change="handleChange"
+                @change="addressChange"
               ></el-cascader>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col style="width: 66.6666666667%">
-            <el-form-item label="详细地址">
+            <el-form-item label="详细地址" prop="address">
               <el-input
-                v-model="dizhi"
+                v-model="formDate.address"
                 placeholder="请输入"
                 :clearable="true"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="仓库状态" :clearable="true">
+            <el-form-item label="仓库状态" :clearable="true" prop="status">
               <div class="radio">
-                <el-radio v-model="radio" label="1">启用</el-radio>
-                <el-radio v-model="radio" label="2">停用</el-radio>
+                <el-radio v-model="formDate.status" label="1">启用</el-radio>
+                <el-radio v-model="formDate.status" label="0">停用</el-radio>
               </div>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col>
-            <el-form-item label="仓库面积" :clearable="true">
-              <el-input v-model="mianji" placeholder="请输入"></el-input>
+            <el-form-item label="仓库面积" :clearable="true" prop="ssurface">
+              <el-input
+                v-model="formDate.surface"
+                placeholder="请输入"
+              ></el-input>
               <span class="el-input-group__append">m³</span>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="负责人" :clearable="true">
-              <el-input v-model="fuzeren" placeholder="请输入"></el-input>
+            <el-form-item label="负责人" :clearable="true" prop="personName">
+              <el-input
+                v-model="formDate.personName"
+                placeholder="请输入"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="联系电话" :clearable="true">
-              <el-input v-model="dianhua" placeholder="请输入"></el-input>
+            <el-form-item label="联系电话" :clearable="true" prop="phone">
+              <el-input
+                v-model="formDate.phone"
+                placeholder="请输入"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -94,39 +103,67 @@
       <!-- 按钮 -->
       <div class="buttonBox">
         <el-button round class="unimportanceButton">返回</el-button>
-        <el-button round class="unimportanceButton">提交</el-button>
+        <el-button round class="unimportanceButton" @click="submit"
+          >提交</el-button
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { regionData, CodeToText } from 'element-china-area-data'
+import { addWarehouse } from '@/api/manage-base-info'
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      bianma: 'CK001003',
-      mingcheng: '',
-      // ------------
-      state: '',
-      zhongzhuan: '',
-      jiagong: '',
-      chubei: '',
-      lengcang: '',
-      // -------------
-      diqu: '',
-      options: [],
-      // -------------
-      dizhi: '',
-      mianji: '',
-      fuzeren: '',
-      dianhua: '',
-
-      radio: '1'
+      formDate: {
+        code: 'CK001003',
+        name: '',
+        type: '',
+        address: '',
+        surface: '',
+        personName: '',
+        phone: '',
+        selectedOptions: [],
+        status: '1'
+      },
+      options: regionData,
+      form: {}
     }
   },
+  created () {
+    this.getter()
+    // 初始化省市区
+    this.selectedOptions = [
+      this.form.provinceCode,
+      this.form.cityCode,
+      this.form.areaCode
+    ]
+  },
+  computed: {
+    ...mapGetters(['editlist'])
+  },
   methods: {
-    handleChange () {
-      console.log(111)
+    // 省/市/区
+    addressChange (arr) {
+      const _this = this
+      console.log(arr)
+      console.log(CodeToText[arr[0]], CodeToText[arr[1]], CodeToText[arr[2]])
+      _this.form.provinceCode = arr[0]
+      _this.form.cityCode = arr[1]
+      _this.form.areaCode = arr[2]
+    },
+    // 如果编辑数据回显
+    getter () {
+      this.formDate = this.editlist
+      console.log(this.formDate)
+    },
+    async submit () {
+      await addWarehouse({
+        ...this.formData
+      })
     }
   }
 }
