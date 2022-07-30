@@ -2,12 +2,11 @@ import request from '@/utils/request'
 // 查询仓库
 export const getWarehouse = (params) =>
   request({
-    // api/warehouse/page?like_code=&like_name=&current=1&size=10&descs=createTime
     url: '/api/warehouse/page',
     params
   })
 // 修改仓库
-export const putWarehouse = (id) =>
+export const editWarehouse = (id) =>
   request({
     // api/warehouse/page?like_code=&like_name=&current=1&size=10&descs=createTime
     url: `/api/warehouse/${id}`
@@ -23,4 +22,9 @@ export const addWarehouse = (data) =>
 export const all = () =>
   request({
     url: 'api/warehouse/list'
+  })
+// 编号
+export const getCode = () =>
+  request({
+    url: '/api/codeFactory/next/CK'
   })

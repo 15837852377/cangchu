@@ -2,7 +2,7 @@
   <div>
     <div class="divWarehouseAdd">
       <!-- 表单 -->
-      <el-form class="divForm" :v-model="formDate">
+      <el-form class="divForm" :model="formDate" :rules="formrules" ref="form">
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col>
             <el-form-item label="仓库编码" prop="code">
@@ -65,16 +65,16 @@
           </el-col>
           <el-col>
             <el-form-item label="仓库状态" :clearable="true" prop="status">
-              <div class="radio">
-                <el-radio v-model="formDate.status" label="1">启用</el-radio>
-                <el-radio v-model="formDate.status" label="0">停用</el-radio>
-              </div>
+              <el-radio-group v-model="formDate.status" class="radio">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">停用</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="margin-left: -15px; margin-right: -15px">
           <el-col>
-            <el-form-item label="仓库面积" :clearable="true" prop="ssurface">
+            <el-form-item label="仓库面积" :clearable="true" prop="surface">
               <el-input
                 v-model="formDate.surface"
                 placeholder="请输入"
@@ -113,13 +113,13 @@
 
 <script>
 import { regionData, CodeToText } from 'element-china-area-data'
-import { addWarehouse } from '@/api/manage-base-info'
+import { addWarehouse, editWarehouse, getCode } from '@/api/manage-base-info'
 import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
       formDate: {
-        code: 'CK001003',
+        code: '',
         name: '',
         type: '',
         address: '',
@@ -127,10 +127,17 @@ export default {
         personName: '',
         phone: '',
         selectedOptions: [],
-        status: '1'
+        status: 1
       },
       options: regionData,
-      form: {}
+      form: {},
+      formrules: {
+        name: [{ required: true, message: '不能为空' }],
+        type: [{ required: true, message: '不能为空' }],
+        personName: [{ required: true, message: '不能为空' }],
+        status: [{ required: true, message: '不能为空' }]
+        // areaCode: [{ required: true, message: '不能为空' }]
+      }
     }
   },
   created () {
@@ -155,15 +162,32 @@ export default {
       _this.form.cityCode = arr[1]
       _this.form.areaCode = arr[2]
     },
-    // 如果编辑数据回显
-    getter () {
-      this.formDate = this.editlist
-      console.log(this.formDate)
+    // 编辑数据回显
+    async getter () {
+      if (this.editlist.length > 1) {
+        const res = await editWarehouse(this.editlist)
+        console.log(res)
+        this.formDate.selectedOptions[0] = res.data.data.province
+        this.formDate.selectedOptions[1] = res.data.data.city
+        this.formDate.selectedOptions[2] = res.data.data.area
+        console.log(this.formDate.selectedOptions)
+        this.formDate = res.data.data
+      } else {
+        const res = await getCode()
+        // console.log(res.data.data)
+        this.formDate.code = res.data.data
+      }
     },
+    // 提交按钮
     async submit () {
-      await addWarehouse({
-        ...this.formData
-      })
+      try {
+        await this.$refs.form.validate()
+        await addWarehouse(this.formDate)
+        this.$message.success('操作成功')
+        this.$router.push('/manage-base-info/warehouse')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }

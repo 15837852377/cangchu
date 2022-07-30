@@ -165,7 +165,7 @@ export default {
         return '未知'
       }
     },
-    // 分页数据跳转选软
+    // 分页数据跳转
     currentPage (page) {
       this.page = page
       this.getWarehouse()
@@ -186,7 +186,7 @@ export default {
     },
     // 编辑按钮
     edit (data) {
-      this.$store.dispatch('mangeBase/editWarehouse', data.id)
+      this.$store.commit('mangeBase/editlists', data.id)
       this.$router.push('/manage-base-info/warehouse/details')
     },
     onSubmit () {
